@@ -42,48 +42,35 @@ def splitText(raw_text):
 raw_text = readPDF("businessmodels.pdf")
 texts = splitText(raw_text)
 
+print("After read PDF")
 # Download embeddings from OpenAI
 embeddings = OpenAIEmbeddings() # type: ignore
+print("After OpenAIEmbeddings")
 docsearch = FAISS.from_texts(texts, embeddings)
+print("After Faiss Init")
 # set up FAISS as a generic retriever 
 retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":6})
-
-# create the chain to answer questions 
-rqa = RetrievalQA.from_chain_type(llm=OpenAI(),  # type: ignore
-                                  chain_type="stuff", 
-                                  retriever=retriever,
-                                  # return_source_documents=True,
-                                )
-rqa.input_key = "answer"
-rqa.output_key = "rqa_response"
+print("After Faiss as retriever")
 
 
-template = PromptTemplate(
-        input_variables = ["guest_answer"],
-        template = dt_find_unmentioned_segments
-    )
+unmentionedTemplate = PromptTemplate(
+    input_variables = ["answer"],
+    template = dt_find_unmentioned_segments
+)
 
 reg_llm = OpenAI(temperature=0.1) # type: ignore
 
 reg_chain = LLMChain(
     llm = reg_llm,
-    prompt = template,
-    verbose = True,
-    output_key = "llm_response"
-)
-
-seq = SequentialChain(
-    chains = [
-        reg_chain,
-        rqa
-    ],
-    input_variables = ["guest_answer"],
-    output_variables = ["rqa_response", "llm_response"],
+    prompt = unmentionedTemplate,
     verbose = True
 )
 
+
+
 # Framework
 st.title("Digital Transformation Podcast AI")
+st.subheader = ""
 prompt = st.text_area("Command or Response")
 
 # render response
@@ -93,7 +80,7 @@ if st.button('Absenden'):
             # response = rqa(prompt, return_only_outputs=True)
             # answer = response['result']
             # response = seq(prompt, return_only_outputs=True)
-            response = seq({"guest_answer" : prompt})
+            response = reg_chain.run(prompt)
             
             st.write(response)
 
