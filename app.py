@@ -10,10 +10,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
-
-API_KEY = "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"
-
-environ["OPENAI_API_KEY"] = API_KEY
+import key
 
 
 def readPDF(filename):
