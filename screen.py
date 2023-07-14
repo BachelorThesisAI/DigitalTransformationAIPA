@@ -64,7 +64,6 @@ if current_section == 0:
                 # answer = response['result']
                 # response = seq(prompt, return_only_outputs=True)
                 response = reg_chain.run(prompt)
-                
                 st.write(response)
                 if st.button('Übernehmen'):
                     if prompt:
