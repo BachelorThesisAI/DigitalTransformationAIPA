@@ -121,9 +121,10 @@ class LLMService:
             prompt=podcastStructurePrompt,
             llm=self.buildLLM(0.9)
         )
+        concatenated_research = "\n".join(research)
         return podcast_structure_chain({
-            self.background_information_key: "",
-            self.requirements_key: "",
-            self.research_key : "",
+            self.background_information_key: background_information,
+            self.requirements_key: requirements,
+            self.research_key : concatenated_research,
             self.json_example_key: podcast_structure_json_example
         })
