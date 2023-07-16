@@ -11,6 +11,9 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 import key
+from components.llmservice import LLMService
+from components.vectordb import VectorDatabaseService
+
 
 
 def readPDF(filename):

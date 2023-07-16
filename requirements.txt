@@ -5,3 +5,5 @@ streamlit
 pinecone-client
 tiktoken
 chromadb
+doctran
+faiss-client

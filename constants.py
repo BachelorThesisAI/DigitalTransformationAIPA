@@ -37,3 +37,24 @@ Wenn Sie zusätzliche Materialien haben, die uns helfen könnten, Ihren Podcast 
 
 Beispiel: Laden Sie hier ein Fallbeispiel hoch, in dem die digitale Transformation eines Unternehmens und seine Auswirkungen detailliert beschrieben werden.
 """
+
+title_string = "Digital Transformation AI Podcast Planning Assistant"
+general_explanation = k_podcast_planning_general_explanation
+guest_backgroundinfo_explanation = k_podcast_planning_guest_backgroundinfo_explanation
+guest_backgroundinfo_prompt = "Informationen über den Gast und/oder ein Unternehmen"
+requirements_explanation = k_podcast_planning_requirements_explanation
+requirements_prompt = "Anforderungen an Podcast-Struktur"
+file_upload_explanation = k_podcast_planning_file_upload_explanation
+file_upload_prompt = "PDF Dateien"
+generate_button_text = "Podcast-Struktur generieren"
+spinner_db_text = "Erstelle interne Dokumenten-Datenbank"
+success_db_text = "Datenbank erstellt"
+spinner_generate_queries_text = "Generiere Datenbank-Anfragen"
+error_generate_queries_text = "Fehler beim Generieren der Anfragen, versuchen Sie noch einmal"
+success_generate_queries_text = "Anfragen generiert"
+expander_queries_text = "Anfragen"
+spinner_retrieve_context_text = "Frage Datenbank ab"
+error_retrieve_context_text = "Kontext konnte nicht eingeholt werden"
+success_retrieve_context_text = "Kontext eingeholt"
+spinner_generate_podcast_structure = "Generiere Podcast-Struktur"
+success_generate_podcast_structure = "Podcast-Struktur erstellt"
