@@ -8,6 +8,7 @@ from PyPDF2 import PdfReader
 from langchain.embeddings.openai import OpenAIEmbeddings
 import streamlit as st
 from io import BytesIO
+from langchain.docstore.document import Document
 from typing import List
 
 
@@ -32,14 +33,14 @@ class VectorDatabaseService:
     def createDBfromPDFs(self, files: List[BytesIO]):
         # raw read pdfs
         raw_texts = []
-        localPDFs = ["businessmodels.pdf", "conceptualizing.pdf"]
+        localPDFs = ["businessmodels.pdf",] #"conceptualizing.pdf"]
         [raw_texts.append(self.readLocalPDF(fname))
          for fname in localPDFs]
         # read uploaded pdfs
         [raw_texts.append(self.readUploadedlPDF(updf)) for updf in files]
 
         # summarize PDFs
-        st.session_state[self.SUMMARIES_KEY] = [self.summarize_pdf(text) for text in raw_texts]
+        st.session_state[self.SUMMARIES_KEY] = [self.summarize_text(text) for text in raw_texts]
 
         # cut texts in pieces for vector database
         all_texts_chunks = []
@@ -50,17 +51,10 @@ class VectorDatabaseService:
         # create db
         self.createFAISS(all_texts_chunks)
 
-    def summarize_pdf(self, pdf_file_path):
-        llm = OpenAI(temperature=0.9) # type: ignore
-        loader = PyPDFLoader(pdf_file_path)
-        docs = loader.load_and_split()
-        chain = load_summarize_chain(llm, chain_type="map_reduce")
-        summary = chain.run(docs)   
-        return summary
-
     def summarize_text(self, text):
         llm = OpenAI(temperature=0.9) # type: ignore
-        docs = self.splitText(text)
+        split_text = self.splitText(text)
+        docs = [Document(page_content=t) for t in split_text]
         chain = load_summarize_chain(llm, chain_type="map_reduce")
         summary = chain.run(docs)   
         return summary

@@ -44,9 +44,12 @@ with st.form("planning_form"):
                 ]
             )
         st.success(success_db_text)
+        with st.expander("Zusammenfassungen der Dokumente"):
+            for summary in st.session_state[vectordb.SUMMARIES_KEY]:
+                st.write(summary)
         with st.spinner(spinner_generate_queries_text) as spin:
             queries = llmService.generateContextQueries(
-                vectordb.readPDFnames,
+                st.session_state[vectordb.SUMMARIES_KEY],
                 requirements,
                 bg_info
             )

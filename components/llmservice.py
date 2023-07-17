@@ -16,7 +16,7 @@ class LLMService:
         self.init()
 
         # context query input variable keys
-        self.document_name_list_key = "document_name_list"
+        self.summary_list_key = "summaries"
         self.requirements_key = "requirements"
         self.background_information_key = "background_information"
         # podcast structure input variable keys
@@ -55,8 +55,8 @@ class LLMService:
         # create context queries for vector database
         contextQueryChain = LLMChain(
             prompt = PromptTemplate(
-                input_variables = [self.document_name_list_key, self.requirements_key, self.background_information_key],
-                template = podcast_structure_context_queries,
+                input_variables = [self.summary_list_key, self.requirements_key, self.background_information_key],
+                template = podcast_structure_planning_template,
             ),
             llm=llm
         )
@@ -67,27 +67,27 @@ class LLMService:
     def buildLLM(self, temperature: float):
         return OpenAI(temperature = temperature) # type: ignore
     
-    def generateContextQueries(self, document_name_list: List[str], requirements: str, background_information: str):
+    def generateContextQueries(self, summaries_list: List[str], requirements: str, background_information: str):
         # init llm
         llm = self.buildLLM(0.9)
         # create context queries for vector database
         contextQueryChain = LLMChain(
             prompt = PromptTemplate(
-                input_variables = [self.document_name_list_key, self.requirements_key, self.background_information_key],
+                input_variables = [self.requirements_key, self.background_information_key, self.summary_list_key],
                 template = podcast_structure_context_queries,
             ),
             llm=llm
         )
 
         resp = contextQueryChain(inputs = {
-            self.document_name_list_key: document_name_list,
+            self.summary_list_key: "\n".join(summaries_list),
             self.requirements_key: requirements,
             self.background_information_key: background_information
         })
         print(resp)
         cleaned_queries = None
         try:
-            cleaned_queries = [x.replace("\n", "") for x in str(resp["text"]).split("*") if x != ""]
+            cleaned_queries = [x.replace("\n", "") for x in str(resp["text"]).split("*") if x is str and x != ""]
         except:
             pass
         return cleaned_queries
@@ -99,8 +99,9 @@ class LLMService:
                                   chain_type="stuff", 
                                   retriever=retriever, 
                                   return_source_documents=True)
+        
         contexts_and_sources = [
-            rqa(query) for query in queries
+            (print(f"Query: {query}"), rqa(query))[1] for query in queries
         ]
         contexts_and_sources = [(cas["result"], [source.page_content for source in cas["source_documents"]]) for cas in contexts_and_sources]
 
