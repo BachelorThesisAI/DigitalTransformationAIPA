@@ -1,4 +1,4 @@
 from os import environ
-API_KEY = "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"
+API_KEY = "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"
 
 environ["OPENAI_API_KEY"] = API_KEY

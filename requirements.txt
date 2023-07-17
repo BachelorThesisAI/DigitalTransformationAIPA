@@ -1,5 +1,6 @@
 langchain
 pypdf2
+pypdf
 openai
 streamlit
 pinecone-client
@@ -7,3 +8,4 @@ tiktoken
 chromadb
 doctran
 faiss-client
+gradio

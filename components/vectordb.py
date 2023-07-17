@@ -1,6 +1,9 @@
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
+from langchain.llms import OpenAI
+from langchain.chains.summarize import load_summarize_chain
+from langchain.document_loaders import PyPDFLoader
 from PyPDF2 import PdfReader
 from langchain.embeddings.openai import OpenAIEmbeddings
 import streamlit as st
@@ -11,7 +14,7 @@ from typing import List
 class VectorDatabaseService:
 
     def __init__(self) -> None:
-        self.readPDFnames = []
+        self.SUMMARIES_KEY = "SUMMARIES"
         self.docsearch = None
         self.retriever = None
 
@@ -30,12 +33,15 @@ class VectorDatabaseService:
         # raw read pdfs
         raw_texts = []
         localPDFs = ["businessmodels.pdf", "conceptualizing.pdf"]
-        [(raw_texts.append(self.readLocalPDF(fname)),
-          self.readPDFnames.append(fname))
+        [raw_texts.append(self.readLocalPDF(fname))
          for fname in localPDFs]
         # read uploaded pdfs
-        [(raw_texts.append(self.readUploadedlPDF(updf)), self.readPDFnames.append(updf)) for updf in files]
-        # cut them in pieces
+        [raw_texts.append(self.readUploadedlPDF(updf)) for updf in files]
+
+        # summarize PDFs
+        st.session_state[self.SUMMARIES_KEY] = [self.summarize_pdf(text) for text in raw_texts]
+
+        # cut texts in pieces for vector database
         all_texts_chunks = []
         [
             [all_texts_chunks.append(chunk) for chunk in self.splitText(raw_text)]
@@ -43,8 +49,21 @@ class VectorDatabaseService:
         ]
         # create db
         self.createFAISS(all_texts_chunks)
-        
 
+    def summarize_pdf(self, pdf_file_path):
+        llm = OpenAI(temperature=0.9) # type: ignore
+        loader = PyPDFLoader(pdf_file_path)
+        docs = loader.load_and_split()
+        chain = load_summarize_chain(llm, chain_type="map_reduce")
+        summary = chain.run(docs)   
+        return summary
+
+    def summarize_text(self, text):
+        llm = OpenAI(temperature=0.9) # type: ignore
+        docs = self.splitText(text)
+        chain = load_summarize_chain(llm, chain_type="map_reduce")
+        summary = chain.run(docs)   
+        return summary
     
     def readUploadedlPDF(self, stream: BytesIO):
         doc_reader = PdfReader(stream)

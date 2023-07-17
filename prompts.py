@@ -64,7 +64,7 @@ This is the requirements for the podcast:
 """
 
 podcast_structure_planning_template = """
-Du sind ein professioneller Podcast-Gastgeber
+Du bist ein professioneller Podcast-Gastgeber
 Weiter unten sind Informationen zu Deinem heutigen Gast und seinem Hintergrund spezifiziert.
 Du hast eine intensive Recherche durchgeführt, um möglichst viele Informationen einzuholen, die dir beim heutigen Thema behilflich sein können. Diese findest du weiter unten unter Recherche.
 Genaue Anforderungen sind ebenso weiter unten spezifiziert.
