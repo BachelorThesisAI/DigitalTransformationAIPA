@@ -15,6 +15,7 @@ class LLMService:
         self.OPENAI_API_KEY = "OPENAI_API_KEY"
         self.queries_key = "QUERIES_KEY"
         self.contexts_and_sources_key = "contexts_and_sources"
+        self.podcast_structure_key = "podcast_structure"
         self.init()
 
         # context query input variable keys
@@ -71,6 +72,10 @@ class LLMService:
     
     def generateContextQueries(self, summaries_list: List[str], requirements: str, background_information: str):
         # init llm
+        print(f"Summaries : {summaries_list}")
+        print(f"Req : {requirements}")
+        print(f"bg : {background_information}")
+
         llm = self.buildLLM(0.9)
         # create context queries for vector database
         contextQueryChain = LLMChain(
@@ -86,10 +91,13 @@ class LLMService:
             self.requirements_key: requirements,
             self.background_information_key: background_information
         })
-        print(resp)
+        print(f"Antwort: {resp}")
         cleaned_queries = None
         try:
-            cleaned_queries = [x.replace("\n", "") for x in str(resp["text"]).split("*") if x is str and x != ""]
+            cleaned_queries = [x for x in str(resp["text"]).split("*")]
+            print(f"Cleaned queries: {cleaned_queries}")
+            cleaned_queries = [x.replace("\n", "") for x in cleaned_queries if type(x) is str and x != ""]
+            print(f"Cleaned queries: {cleaned_queries}")
         except:
             pass
         return cleaned_queries
@@ -125,9 +133,13 @@ class LLMService:
             llm=self.buildLLM(0.9)
         )
         concatenated_research = "\n".join(research)
-        return podcast_structure_chain({
-            self.background_information_key: background_information,
-            self.requirements_key: requirements,
-            self.research_key : concatenated_research,
-            self.json_example_key: podcast_structure_json_example
-        })
+        try:
+            resp = podcast_structure_chain({
+                self.background_information_key: background_information,
+                self.requirements_key: requirements,
+                self.research_key : concatenated_research,
+                self.json_example_key: podcast_structure_json_example
+            })
+            return resp["text"]
+        except:
+            return None

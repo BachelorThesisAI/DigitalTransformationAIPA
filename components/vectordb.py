@@ -16,6 +16,8 @@ class VectorDatabaseService:
 
     def __init__(self) -> None:
         self.SUMMARIES_KEY = "SUMMARIES"
+        self.retriever_key = "RETRIEVER"
+        self.docsearch_key = "DOCSEARCH"
         self.docsearch = None
         self.retriever = None
 
@@ -93,5 +95,5 @@ class VectorDatabaseService:
             search_type="similarity",
             search_kwargs={"k": 6}
         )
-        st.session_state["FAISS"] = self.retriever
-        st.session_state["docsearch"] = self.docsearch
+        st.session_state[self.retriever_key] = self.retriever
+        st.session_state[self.docsearch_key] = self.docsearch

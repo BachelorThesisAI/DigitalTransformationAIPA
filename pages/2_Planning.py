@@ -55,6 +55,7 @@ if st.button("Dokumente verarbeiten"):
                         for uploaded_file in files
             ]
         )
+if vectordb.SUMMARIES_KEY in st.session_state:
     if st.session_state[vectordb.SUMMARIES_KEY] != []:
         st.success(success_db_text)
         with st.expander("Zusammenfassungen der Dokumente"):
@@ -64,15 +65,16 @@ if st.button("Dokumente verarbeiten"):
         st.error("Zusammenfassungen konnten nicht erstellt werden")
 
 st.divider()
-st.subheader("Anfragengerstellung")
+st.subheader("Anfragenerstellung")
 st.write("Basierend auf in der Datenbank hinterlegten Dokumenten, Hintergrundinformationen und Anforderungen zum Podcast werden hier Anfragen generiert. Bei jeder Änderung der abhängigen Eingaben sollten diese neu generiert werden")
 if st.button("Anfragen generieren"):
     with st.spinner(spinner_generate_queries_text) as spin:
         st.session_state[llmService.queries_key] = llmService.generateContextQueries(
             st.session_state[vectordb.SUMMARIES_KEY],
-            requirements,
-            bg_info
+            st.session_state[podcastManager.REQUIREMENTS_KEY],
+            st.session_state[podcastManager.BG_INFO_KEY]
         )
+if llmService.queries_key in st.session_state:
     if st.session_state[llmService.queries_key] == None:
         st.error(error_generate_queries_text)
     else:
@@ -87,9 +89,10 @@ st.write("Hier werden Abfragen an die Datenbank durchgeführt. Falls Sie neue An
 if st.button("Frage Dokumente ab"):
     with st.spinner(spinner_retrieve_context_text):
         st.session_state[llmService.contexts_and_sources_key] = llmService.retrieveContextualInformation(
-            retriever = vectordb.retriever,
+            retriever = st.session_state[vectordb.retriever_key],
             queries = st.session_state[llmService.queries_key]
         )
+if llmService.contexts_and_sources_key in st.session_state:
     if len(st.session_state[llmService.contexts_and_sources_key]) == 0:
         st.error(error_retrieve_context_text)
     else:
@@ -97,16 +100,17 @@ if st.button("Frage Dokumente ab"):
         for cas in st.session_state[llmService.contexts_and_sources_key]:
             with st.expander(cas[0]):
                 st.write(cas[1])
-        response = None
 
 st.divider()
 
 if st.button("Generiere Podcast-Struktur"):
     with st.spinner(spinner_generate_podcast_structure):
-        response = llmService.generatePodcastStructure(
+        st.session_state[llmService.podcast_structure_key] = llmService.generatePodcastStructure(
             background_information = bg_info,
             requirements = requirements,
             research = [cas[0] for cas in st.session_state[llmService.contexts_and_sources_key]]
         )
-    st.success(success_generate_podcast_structure)
-    st.write(response)
+if llmService.podcast_structure_key in st.session_state:
+    if st.session_state[llmService.podcast_structure_key] != None:
+        st.success(success_generate_podcast_structure)
+        st.write(st.session_state[llmService.podcast_structure_key])
