@@ -1,5 +1,10 @@
 k_podcast_planning_general_explanation = """
-Willkommen in der Planungsphase Ihres Podcasts! In diesem Abschnitt sammeln wir alle wichtigen Informationen, die benötigt werden, um Ihren Podcast effektiv zu planen und durchzuführen. Bitte nehmen Sie sich Zeit, um die folgenden Felder auszufüllen.
+Willkommen in der Planungsphase Ihres Podcasts!
+In diesem Abschnitt sammeln wir alle wichtigen Informationen, die benötigt werden, um Ihren Podcast effektiv zu planen und durchführen zu können.
+Nach Hochladen der Dokumente, wird eine Datenbank erstellt.
+Basierend auf Ihren Angaben zu Ziel des Podcast usw. erstellt die KI Anfragen, um Informationen aus der Datenbank einzuholen.
+Mit den eingeholten Informationen kann die KI interessante Podcast-Ideen generieren
+Sie können nach Bedarf die Informationen ändern und ausgewählte Schritte nochmals durchlaufen.
 """
 
 k_podcast_planning_requirements_explanation = """
@@ -30,8 +35,12 @@ Bitte geben Sie hier alle relevanten Informationen zu Ihrem Gast und/oder seinem
 Beispiel: Max Mustermann, CEO von Musterfirma, hat über 20 Jahre Erfahrung in der Softwareentwicklung. Musterfirma, gegründet im Jahr 2000, hat sich auf Sicherheitssoftware spezialisiert...
 """
 
+podcast_database_creation_explanation = """
+In diesem Schritt wird aus hochgeladenen Dokumenten eine Datenbank erstellt und diese werden nochmals zusammengefasst
+"""
+
 k_podcast_planning_file_upload_explanation = """
-Wenn Sie zusätzliche Materialien haben, die uns helfen könnten, Ihren Podcast besser zu planen und zu strukturieren, laden Sie diese bitte hier hoch. Dies könnte Case Studies, theoretische Informationen zur digitalen Transformation, Pressemitteilungen, Whitepapers, Forschungsberichte oder andere relevante Dokumente umfassen, die zur weiteren Vertiefung des Themas beitragen können.
+Wenn Sie zusätzliche Materialien haben, die helfen könnten, Ihren Podcast besser zu planen und zu strukturieren, laden Sie diese bitte hier hoch. Dies könnte Case Studies, theoretische Informationen zur digitalen Transformation, Pressemitteilungen, Whitepapers, Forschungsberichte oder andere relevante Dokumente umfassen, die zur weiteren Vertiefung des Themas beitragen können.
 
 **Bitte beachten Sie, dass nur PDF-Dateien akzeptiert werden.**
 
@@ -46,7 +55,7 @@ requirements_explanation = k_podcast_planning_requirements_explanation
 requirements_prompt = "Anforderungen an Podcast-Struktur"
 file_upload_explanation = k_podcast_planning_file_upload_explanation
 file_upload_prompt = "PDF Dateien"
-generate_button_text = "Podcast-Struktur generieren"
+generate_button_text = "Änderungen speichern"
 spinner_db_text = "Erstelle interne Dokumenten-Datenbank und fasse Dokumente zusammen"
 success_db_text = "Datenbank erstellt"
 spinner_generate_queries_text = "Generiere Datenbank-Anfragen"

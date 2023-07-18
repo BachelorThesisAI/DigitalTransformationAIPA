@@ -30,55 +30,83 @@ with st.form("planning_form"):
     st.write(requirements_explanation)
     requirements = st.text_area(requirements_prompt)
     st.divider()
-    st.write(file_upload_explanation)
-    st.divider()
-    files = st.file_uploader(file_upload_prompt, accept_multiple_files=True)
     if st.form_submit_button(generate_button_text):
-        with st.spinner(spinner_db_text):
-            if files is None:
-                files = []
-            vectordb.createDBfromPDFs(
-                files = [
-                    BytesIO(uploaded_file.getvalue())
-                            for uploaded_file in files
-                ]
-            )
+        # files
+        st.session_state[podcastManager.BG_INFO_KEY] = bg_info
+        st.session_state[podcastManager.REQUIREMENTS_KEY] = requirements
+        # bg_info
+        # requirements
+        pass
+
+st.divider()
+st.subheader("Dokumentenverarbeitung")
+st.write(podcast_database_creation_explanation)
+st.write("")
+st.write(file_upload_explanation)
+files = st.file_uploader(file_upload_prompt, accept_multiple_files=True)
+if st.button("Dokumente verarbeiten"):
+    with st.spinner(spinner_db_text):
+        if files is None:
+            files = []
+        st.session_state[vectordb.SUMMARIES_KEY] = []
+        vectordb.createDBfromPDFs(
+            files = [
+                BytesIO(uploaded_file.getvalue())
+                        for uploaded_file in files
+            ]
+        )
+    if st.session_state[vectordb.SUMMARIES_KEY] != []:
         st.success(success_db_text)
         with st.expander("Zusammenfassungen der Dokumente"):
             for summary in st.session_state[vectordb.SUMMARIES_KEY]:
                 st.write(summary)
-        with st.spinner(spinner_generate_queries_text) as spin:
-            queries = llmService.generateContextQueries(
-                st.session_state[vectordb.SUMMARIES_KEY],
-                requirements,
-                bg_info
-            )
-        if queries == None:
-            st.error(error_generate_queries_text)
-        else:
-            st.success(success_generate_queries_text)
-            with st.expander(expander_queries_text):
-                st.write(queries)
-            
-            contexts_and_sources = []
-            with st.spinner(spinner_retrieve_context_text):
-                contexts_and_sources = llmService.retrieveContextualInformation(
-                    retriever = vectordb.retriever,
-                    queries = queries
-                )
-            if len(contexts_and_sources) == 0:
-                st.error(error_retrieve_context_text)
-            else:
-                st.success(success_retrieve_context_text)
-                for cas in contexts_and_sources:
-                    with st.expander(cas[0]):
-                        st.write(cas[1])
-                response = None
-                with st.spinner(spinner_generate_podcast_structure):
-                    response = llmService.generatePodcastStructure(
-                        background_information = bg_info,
-                        requirements = requirements,
-                        research = [cas[0] for cas in contexts_and_sources]
-                    )
-                st.success(success_generate_podcast_structure)
-                st.write(response)
+    else:
+        st.error("Zusammenfassungen konnten nicht erstellt werden")
+
+st.divider()
+st.subheader("Anfragengerstellung")
+st.write("Basierend auf in der Datenbank hinterlegten Dokumenten, Hintergrundinformationen und Anforderungen zum Podcast werden hier Anfragen generiert. Bei jeder Änderung der abhängigen Eingaben sollten diese neu generiert werden")
+if st.button("Anfragen generieren"):
+    with st.spinner(spinner_generate_queries_text) as spin:
+        st.session_state[llmService.queries_key] = llmService.generateContextQueries(
+            st.session_state[vectordb.SUMMARIES_KEY],
+            requirements,
+            bg_info
+        )
+    if st.session_state[llmService.queries_key] == None:
+        st.error(error_generate_queries_text)
+    else:
+        st.success(success_generate_queries_text)
+        with st.expander(expander_queries_text):
+            st.write(st.session_state[llmService.queries_key])
+
+st.divider()
+
+st.subheader("Recherche")
+st.write("Hier werden Abfragen an die Datenbank durchgeführt. Falls Sie neue Anfragen generieren, sollte dieser Schritt nochmal durchgeführt werden.")
+if st.button("Frage Dokumente ab"):
+    with st.spinner(spinner_retrieve_context_text):
+        st.session_state[llmService.contexts_and_sources_key] = llmService.retrieveContextualInformation(
+            retriever = vectordb.retriever,
+            queries = st.session_state[llmService.queries_key]
+        )
+    if len(st.session_state[llmService.contexts_and_sources_key]) == 0:
+        st.error(error_retrieve_context_text)
+    else:
+        st.success(success_retrieve_context_text)
+        for cas in st.session_state[llmService.contexts_and_sources_key]:
+            with st.expander(cas[0]):
+                st.write(cas[1])
+        response = None
+
+st.divider()
+
+if st.button("Generiere Podcast-Struktur"):
+    with st.spinner(spinner_generate_podcast_structure):
+        response = llmService.generatePodcastStructure(
+            background_information = bg_info,
+            requirements = requirements,
+            research = [cas[0] for cas in st.session_state[llmService.contexts_and_sources_key]]
+        )
+    st.success(success_generate_podcast_structure)
+    st.write(response)

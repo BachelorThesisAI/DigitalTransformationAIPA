@@ -13,6 +13,8 @@ class LLMService:
 
     def __init__(self) -> None:
         self.OPENAI_API_KEY = "OPENAI_API_KEY"
+        self.queries_key = "QUERIES_KEY"
+        self.contexts_and_sources_key = "contexts_and_sources"
         self.init()
 
         # context query input variable keys

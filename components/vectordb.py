@@ -40,7 +40,7 @@ class VectorDatabaseService:
         [raw_texts.append(self.readUploadedlPDF(updf)) for updf in files]
 
         # summarize PDFs
-        st.session_state[self.SUMMARIES_KEY] = [self.summarize_text(text) for text in raw_texts]
+        st.session_state[self.SUMMARIES_KEY] = [summary for summary in [self.summarize_text(text) for text in raw_texts] if summary is not None]
 
         # cut texts in pieces for vector database
         all_texts_chunks = []
@@ -52,12 +52,15 @@ class VectorDatabaseService:
         self.createFAISS(all_texts_chunks)
 
     def summarize_text(self, text):
-        llm = OpenAI(temperature=0.9) # type: ignore
-        split_text = self.splitText(text)
-        docs = [Document(page_content=t) for t in split_text]
-        chain = load_summarize_chain(llm, chain_type="map_reduce")
-        summary = chain.run(docs)   
-        return summary
+        try:
+            llm = OpenAI(temperature=0.9) # type: ignore
+            split_text = self.splitText(text)
+            docs = [Document(page_content=t) for t in split_text]
+            chain = load_summarize_chain(llm, chain_type="map_reduce")
+            summary = chain.run(docs)   
+            return summary
+        except:
+            return None
     
     def readUploadedlPDF(self, stream: BytesIO):
         doc_reader = PdfReader(stream)
