@@ -5,7 +5,4 @@ openai
 streamlit
 pinecone-client
 tiktoken
-chromadb
-doctran
 faiss-cpu
-gradio
