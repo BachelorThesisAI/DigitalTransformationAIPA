@@ -1,12 +1,7 @@
-import api_key
-import key
+#import api_key
+#import key
 import streamlit as st
 from constants import *
-from prompts import *
-from langchain.chains import LLMChain
-from langchain.llms import OpenAI
-from langchain.chains import LLMChain, SimpleSequentialChain, SequentialChain
-from langchain.prompts import PromptTemplate
 from components.llmservice import LLMService
 from components.podcastmanager import PodcastManager
 from components.vectordb import VectorDatabaseService
@@ -114,3 +109,5 @@ if llmService.podcast_structure_key in st.session_state:
     if st.session_state[llmService.podcast_structure_key] != None:
         st.success(success_generate_podcast_structure)
         st.write(st.session_state[llmService.podcast_structure_key])
+        if st.button("Übernehmen"):
+            podcastManager.setPodcastStructure()

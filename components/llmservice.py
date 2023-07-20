@@ -1,13 +1,15 @@
 from os import environ
 from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
 from streamlit import session_state
 from langchain.chains import LLMChain, SimpleSequentialChain, SequentialChain, RetrievalQA
 from langchain.prompts import  PromptTemplate
-import key
+#import key
 from prompts import *
 from components.podcastmanager import PodcastManager
 from typing import List, Tuple
-#from components.vectordb import VectorDatabaseService
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from json import loads
 
 class LLMService:
 
@@ -52,21 +54,6 @@ class LLMService:
         except:
             return False
     
-    def createPodcastStructure(self, retriever):
-        # init llm
-        llm = self.buildLLM(0.9)
-        # create context queries for vector database
-        contextQueryChain = LLMChain(
-            prompt = PromptTemplate(
-                input_variables = [self.summary_list_key, self.requirements_key, self.background_information_key],
-                template = podcast_structure_planning_template,
-            ),
-            llm=llm
-        )
-
-        # retrieven von kontext
-        # erstellen der struktur
-    
     def buildLLM(self, temperature: float):
         return OpenAI(temperature = temperature) # type: ignore
     
@@ -76,25 +63,19 @@ class LLMService:
         print(f"Req : {requirements}")
         print(f"bg : {background_information}")
 
-        llm = self.buildLLM(0.9)
+        llm = self.buildChatCompletionsLLM(0.9)
         # create context queries for vector database
-        contextQueryChain = LLMChain(
-            prompt = PromptTemplate(
-                input_variables = [self.requirements_key, self.background_information_key, self.summary_list_key],
-                template = podcast_structure_context_queries,
-            ),
-            llm=llm
+        
+        resp = self.runSingleChatCompletionsLLM(
+            llm,
+            prompt = self.buildContextQueryPrompt(
+                requirements, background_information, "\n".join(summaries_list)
+            )
         )
-
-        resp = contextQueryChain(inputs = {
-            self.summary_list_key: "\n".join(summaries_list),
-            self.requirements_key: requirements,
-            self.background_information_key: background_information
-        })
         print(f"Antwort: {resp}")
         cleaned_queries = None
         try:
-            cleaned_queries = [x for x in str(resp["text"]).split("*")]
+            cleaned_queries = [x for x in resp.split("*")]
             print(f"Cleaned queries: {cleaned_queries}")
             cleaned_queries = [x.replace("\n", "") for x in cleaned_queries if type(x) is str and x != ""]
             print(f"Cleaned queries: {cleaned_queries}")
@@ -118,7 +99,32 @@ class LLMService:
         return contexts_and_sources
     
     def generatePodcastStructure(self, background_information, requirements, research):
-        podcastStructurePrompt = PromptTemplate(
+        llm = self.buildChatCompletionsLLM(0.9)
+        concatenated_research = "\n".join(research)
+        try:
+            resp = self.runSingleChatCompletionsLLM(
+                llm,
+                prompt = self.buildPodcastStructurePrompt(
+                    background_information, requirements, research
+                )
+            )
+            print(f"PODCAST-Structure: {resp}")
+            return loads(resp)
+        except:
+            return None
+    
+    def buildContextQueryPrompt(self, requirements, background_information, summaries) -> str:
+        return PromptTemplate(
+                input_variables = [self.requirements_key, self.background_information_key, self.summary_list_key],
+                template = podcast_structure_context_queries,
+            ).format(
+                requirements = requirements,
+                background_information = background_information,
+                summaries = summaries
+            )
+    
+    def buildPodcastStructurePrompt(self, background_information, requirements, research) -> str:
+        return PromptTemplate(
             template = podcast_structure_planning_template,
             input_variables = [
                 self.background_information_key,
@@ -126,20 +132,26 @@ class LLMService:
                 self.research_key,
                 self.json_example_key
             ]
+        ).format(
+            background_information = background_information,
+            requirements = requirements,
+            research = research,
+            json_example = podcast_structure_json_example
         )
-
-        podcast_structure_chain = LLMChain(
-            prompt=podcastStructurePrompt,
-            llm=self.buildLLM(0.9)
-        )
-        concatenated_research = "\n".join(research)
+    
+    def buildChatCompletionsLLM(self, temperature: float):
+        llm = ChatOpenAI(
+            model="gpt-3.5-turbo-16k",
+            temperature=temperature
+        ) # type: ignore
+        return llm
+    
+    def runSingleChatCompletionsLLM(self, llm, prompt: str) -> str:
+        messages = [
+            HumanMessage(content=prompt)
+        ]
         try:
-            resp = podcast_structure_chain({
-                self.background_information_key: background_information,
-                self.requirements_key: requirements,
-                self.research_key : concatenated_research,
-                self.json_example_key: podcast_structure_json_example
-            })
-            return resp["text"]
+            response = llm(messages)
+            return response.content
         except:
-            return None
+            return ""

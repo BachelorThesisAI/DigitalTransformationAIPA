@@ -90,8 +90,14 @@ Branchenspezifische Besonderheiten: Wie unterscheidet sich die digitale Transfor
 Lessons Learned: Was sind die wichtigsten Lehren aus gescheiterten Initiativen zur digitalen Transformation?
 
 
-Dabei soll der Podcast-Plan im JSON-Format als hierarchische Struktur mit Abschnitten als Schlüssel und dazugehörigen Fragen oder Themen als Liste definiert werden.
+Dabei soll der Podcast-Plan im JSON-Format als hierarchische Struktur mit Abschnitten als Schlüssel und dazugehörigen Fragen oder Inhalt als Liste definiert werden.
 Dabei soll immer eine Einführung enthalten sein und ein Schlussteil. Diese sollen immer als "Einführung" und "Schlussteil" bezeichnet werden.
+Bei Einleitung und Schlussteil sollten keine Fragen vorkommen, sondern Inhalt wie z.B. Begrüßung des Gastes und so weiter. Im Schlussteil sollten neben einem Recap ggf. weitere Themen vorkommen.
+Die Schlüssel anderer Abschnitte als Einleitung und Schlussteil sollen einen passenden Namen tragen, der das Wesen des Abschnitts umreißt, z.B. Automatisierung.
+Anders als bei Einleitung und Schlussteil können die anderen Abschnitte Fragen und Inhalte beinhalten, sie müssen mindestens 5 Fragen oder Fragen mit Inhalten beinhalten.
+Wenn zum Beispiel der Abschnitt über Automatisierung ist und in der Recherche ein interessanter Fakt vorkommt, der zum Abschnitt passt und der helfen könnte die Diskussion anzustoßen, schreibe diesen Fakt hin und generiere eine passende Frage.
+Die Fragen sollten immer an den Gast und seine Erfahrungen gerichtet sein und somit oft mit seinem Namen beginnen, wie: Herr Mustermann, hatten Sie die gleiche Erfahrung gemacht?
+Nachfolgend ein Beispiel eines kurzen Podcast-Plans im JSON-Format
 Beispiel:
 {json_example}
 
@@ -99,9 +105,9 @@ Deine Antwort:
 """
 
 podcast_structure_json_example = """{
-  "Einleitung": ["wer ist unser Gast heute", "Was hat er Tolles gemacht"],
-  "Thema1": ["Interessantes zum Thema 1", "Was kann man lernen"],
-  "Thema2": ["Interessantes zum Thema 2", "Frage 1", "Frage2"],
+  "Einleitung": ["Begrüßung und Vorstellung des Gastes", "Besprechung des heutigen Themas"],
+  "Prozessautomatisierung": ["Firma X hat einen Prozess automatisiert und dabei im gleichen Jahr einen 20% höheren Gewinn gemacht. Haben Sie die gleiche Erfahrung gemacht?", "Was kann man daraus lernen?"],
+  "Anderes Thema": ["Interessantes zum anderen Thema", "Frage 1", "Frage2"],
   "Schlussteil": ["Recap", "Mögliche Themen zum nächsten Podcast"]
 }"""
 
@@ -123,6 +129,7 @@ Zusammenfassungen der in der Datenbank enthaltenen Dokumente:
 Deine Aufgabe ist nun Anfragen zu schreiben, auf Basis derer die Datenbank abgefragt wird, um eine hochqualitative Recherche zu garantieren.
 
 Generiere genau 10 Anfragen, auf deren Basis die Vector-Datenbank durchgesucht werden kann, um mehr Informationen zum Kontext im Rahmen der Anforderungen und Hintergrund des Gastes einzuholen.
+Jede Anfrage soll genau eine Frage beinhalten.
 Schreibe jede Anfrage hintereinande ohne Nummerierung und trenne sie dabei untereinander durch folgendes Symbol: *
 Beispiel:
 Was ist A*Was ist B
