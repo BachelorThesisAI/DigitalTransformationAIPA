@@ -27,6 +27,7 @@ class LLMService:
         # podcast structure input variable keys
         self.research_key = "research"
         self.json_example_key = "json_example"
+        self.podcastManager = PodcastManager()
     
     def init(self):
         try:
@@ -56,6 +57,45 @@ class LLMService:
     
     def buildLLM(self, temperature: float):
         return OpenAI(temperature = temperature) # type: ignore
+    
+    def generatePodcastTopics(self, bg_info, target_audience, questions, keywords, message):
+        llm = self.buildChatCompletionsLLM(0.9)
+        prompt = self.buildPodcastTopicsPrompt(bg_info, target_audience, questions, keywords, message)
+        print(prompt)
+        resp = self.runSingleChatCompletionsLLM(
+            llm,
+            prompt=prompt
+        )
+
+        print(f"RESPONSE: {resp}")
+
+        cleaned_queries = None
+        try:
+            cleaned_queries = [x for x in resp.split("*")]
+            print(f"Cleaned queries: {cleaned_queries}")
+            cleaned_queries = [x.replace("\n", "") for x in cleaned_queries if type(x) is str and x != ""]
+            print(f"Cleaned queries: {cleaned_queries}")
+        except:
+            pass
+        return cleaned_queries
+    
+    def buildPodcastTopicsPrompt(self, bg_info, target_audience, questions, keywords, message):
+        return PromptTemplate(
+            input_variables=[
+                self.podcastManager.bg_info_key,
+                self.podcastManager.target_audience_key,
+                self.podcastManager.questions_key,
+                self.podcastManager.keywords_key,
+                self.podcastManager.message_key
+            ],
+            template=podcast_topics_generation_template
+        ).format(
+            bg_info=bg_info,
+            target_audience=target_audience,
+            questions=questions,
+            keywords=keywords,
+            message=message
+        )
     
     def generateContextQueries(self, summaries_list: List[str], requirements: str, background_information: str):
         # init llm
@@ -110,7 +150,8 @@ class LLMService:
             )
             print(f"PODCAST-Structure: {resp}")
             return loads(resp)
-        except:
+        except Exception as e:
+            print(f"GOT EXCEPTION {e}")
             return None
     
     def buildContextQueryPrompt(self, requirements, background_information, summaries) -> str:

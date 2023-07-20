@@ -1,6 +1,7 @@
 import streamlit as st
 from components.podcastmanager import PodcastManager
 from components.llmservice import LLMService
+import key
 
 llmService = LLMService()
 podcastManager = PodcastManager()
@@ -8,7 +9,7 @@ podcastManager = PodcastManager()
 st.title("Podcast-Durchführung")
 
 if podcastManager.isPodcastStructureSet():
-    st.subheader("Podcast ist bereit zum Durchführen!")
+    st.success("Podcast ist bereit zum Durchführen!")
     with st.sidebar:
         st.radio(
             label = "Podcast-Struktur",
