@@ -41,12 +41,28 @@ Du hast eine intensive Recherche durchgeführt, um möglichst viele Informatione
 Genaue Anforderungen sind ebenso weiter unten spezifiziert.
 Deine Aufgabe besteht darin, einen Podcast maßgeschneidert an deinen Gast, basierend auf der Recherche und gemäß den weiter unten aufgeführten Anforderungen zu planen.
 
-Informationen zum Gast und seinem Hintergrund:
-{background_information}
+Thema des Podcasts:
+{topic}
 
-Das sind die Voraussetzungen für den Podcast:
-{requirements}
+Hintergrundinformationen zum Gast:
+{bg_info}
 
+Zielgruppe:
+{target_audience}
+
+Das ist die Botschaft, die die Hörer am Ende des Podcasts verstanden haben sollen
+Kernbotschaft:
+{message} 
+
+Diese Wörter sollen so oft es geht in der Wortwahl verwendet werden, ohne den Sinn des Inhalts maßgeblich zu beeinflussen.
+SEO-Keywords:
+{keywords}
+
+Falls enthalten sollen diese Fragen in passenden Abschnitten eingefügt werden
+Fragen: 
+{questions}
+
+Die Informationen aus der Recherche sollen in die Podcast-Planung und die Fragen mit einfließen
 Recherche:
 {research}
 
