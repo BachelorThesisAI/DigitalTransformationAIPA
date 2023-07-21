@@ -1,5 +1,6 @@
 import streamlit as st
 from typing import List
+from json import loads, dumps
 
 class PodcastManager:
     def __init__(self):
@@ -88,3 +89,22 @@ class PodcastManager:
     def nextSection(self):
         if st.session_state[self.CURRENT_SECTION_KEY] < len(st.session_state[self.podcast_structure_key].keys())-1:
             st.session_state[self.CURRENT_SECTION_KEY] = st.session_state[self.CURRENT_SECTION_KEY]+1
+    
+    def buildPodcastPlan(self) -> str:
+        podcastPlan = [
+            self.getStateVariableByKey(self.topic_key),
+            self.getStateVariableByKey(self.bg_info_key),
+            self.getStateVariableByKey(self.target_audience_key),
+            self.getStateVariableByKey(self.questions_key),
+            self.getStateVariableByKey(self.keywords_key),
+            self.getStateVariableByKey(self.message_key),
+            self.getStateVariableByKey(self.podcast_structure_key),
+        ]
+        return dumps(podcastPlan, ensure_ascii=False, indent=4)
+    
+    def loadPodcastPlan(self, podcastPlan: str):
+        keys = [self.topic_key, self.bg_info_key, self.target_audience_key, self.questions_key, self.keywords_key, self.message_key, self.podcast_structure_key]
+        planList = loads(podcastPlan)
+
+        for i, key in enumerate(keys):
+            self.setStateVariableByKey(key, value=planList[i])

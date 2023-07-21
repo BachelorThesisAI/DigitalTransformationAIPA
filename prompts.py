@@ -25,8 +25,10 @@ Fragen:
 {questions}
 
 Schreib genau 10 Themenvorschläge, die zu den oben genannten Anforderungen passen hintereinande ohne Nummerierung und trenne sie dabei untereinander durch folgendes Symbol: *
+Sie sollen UNBEDINGT durch folgendes Symbol getrennt werden: *
+Sie dürfen KEINESWEGS nummeriert sein.
 Beispiel:
-Was ist A*Was ist B
+Was ist A*Was ist B*Was ist C
 
 Deine Antwort:
 """
@@ -86,11 +88,29 @@ Für einen Podcast, der maßgeschneidert an deinen fiktiven Gast mit seinem Hint
 Bei dieser Recherche hast du Zugang zu einer Vektordatenbank, die du nach Informationen aus Dokumenten abfragen kannst.
 Weiter unten sind Hintergrundinformationen zum Gast, Anforderungen an den Podcast, sowie Zusammenfassungen der in der Datenbank enthaltenen Dokumente spezifiziert.
 
-Hintergrundinformationen zum fiktiven Gast:
-{background_information}
+Die Inhalte des Podcast sollen zum Thema genau passen
+Thema des Podcast:
+{topic}
 
-Anforderungen an den Podcast:
-{requirements}
+Die Themen sollen zum Hintergrund des Gastes und seinen Erfahrungen passen. Zum Beispiel Falls der Gast ein Profi in der Digitalen Transformation ist, sollen Themen vorgeschlagen werden, über die er sprechen könnte.
+Hintergrundinformationen zum Gast:
+{bg_info}
+
+Die Themen sollen zur Zielgruppe passen und dabei die Eigenschaften der Zielgruppe berücksichtigen. Akademiker würden zum Beispiel komplexere Themen bevorzugen.
+Zielgruppe:
+{target_audience}
+
+Das ist die Botschaft, die die Hörer am Ende des Podcasts verstanden haben sollen
+Kernbotschaft:
+{message} 
+
+Diese Wörter sollen so oft es geht in der Wortwahl verwendet werden, ohne den Sinn des Inhalts maßgeblich zu beeinflussen.
+SEO-Keywords:
+{keywords}
+
+Falls hier enthalten, können diese Hinweise auf mögliche Themen geben.
+Fragen: 
+{questions}
 
 Zusammenfassungen der in der Datenbank enthaltenen Dokumente:
 {summaries}
@@ -100,6 +120,8 @@ Deine Aufgabe ist nun Anfragen zu schreiben, auf Basis derer die Datenbank abgef
 Generiere genau 10 Anfragen, auf deren Basis die Vector-Datenbank durchgesucht werden kann, um mehr Informationen zum Kontext im Rahmen der Anforderungen und Hintergrund des Gastes einzuholen.
 Jede Anfrage soll genau eine Frage beinhalten.
 Schreibe jede Anfrage hintereinande ohne Nummerierung und trenne sie dabei untereinander durch folgendes Symbol: *
+Sie sollen UNBEDINGT durch folgendes Symbol getrennt werden: *
+Sie dürfen KEINESWEGS nummeriert sein.
 Beispiel:
 Was ist A*Was ist B
 

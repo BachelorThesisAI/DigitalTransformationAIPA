@@ -91,6 +91,7 @@ class VectorDatabaseService:
     def createFAISS(self, texts):
         embeddings = OpenAIEmbeddings() # type: ignore
         self.docsearch = FAISS.from_texts(texts, embeddings)
+        self.docsearch.save_local
         self.retriever = self.docsearch.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 6}

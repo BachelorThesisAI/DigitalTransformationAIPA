@@ -1,10 +1,42 @@
+k_podcast_usage_explanation = """
+# Anleitung für das Podcast-KI-Tool
+
+**Herzlich Willkommen bei unserem Podcast-KI-Tool!** Mit dieser Anleitung führen wir Sie Schritt für Schritt durch unsere Anwendung. Entdecken Sie die einfache Planung und Durchführung eines Podcasts mit Hilfe von Künstlicher Intelligenz.
+
+## Setup – API-Schlüssel hinterlegen
+
+Bevor Sie mit der Planung beginnen können, müssen Sie Ihren API-Schlüssel für die KI-Funktion hinterlegen. Geben Sie den Schlüssel in das dafür vorgesehene Feld ein und klicken Sie auf "Überprüfen". Unser Tool gibt Ihnen eine Rückmeldung, ob der Schlüssel valide ist.
+
+## Informationseingabe
+
+In diesem Abschnitt geben Sie alle relevanten Informationen zu Ihrem Podcast ein. Hier können Sie Details zum Gast und seinem Hintergrund, mögliche SEO-Keywords, eine Kernbotschaft und Fragen, die im Podcast behandelt werden sollen, hinzufügen. Falls Sie bereits ein Thema haben, können Sie dieses hier eintragen. Falls nicht, können Sie auf der nächsten Seite eines generieren lassen. Sie können auch einen vorher erstellten Podcast-Plan hochladen, um Informationen wiederherzustellen.
+
+## Themen-Generierung
+
+Wenn Sie noch kein Thema für Ihren Podcast haben, hilft Ihnen unser Tool dabei, eins zu finden. Basierend auf den zuvor eingegebenen Informationen generiert das Tool Themenvorschläge. Wählen Sie das passende Thema aus und klicken Sie auf "Thema übernehmen". Das ausgewählte Thema wird automatisch in der Informationseingabe vervollständigt.
+
+## Podcast-Planer
+
+Der Podcast-Planer ist der zentrale Ort, an dem Sie mit der KI arbeiten. Hier laden Sie relevante Dokumente hoch, aus denen eine spezielle Datenbank erstellt wird. Anschließend lassen Sie Anfragen an diese Datenbank generieren und Antworten von der KI finden. Auf dieser Grundlage wird die Struktur Ihres Podcasts erstellt.
+
+1. Laden Sie die relevanten Dokumente hoch.
+2. Klicken Sie auf "Anfragen generieren".
+3. Sie sehen nun eine Liste von Anfragen, die auf Basis Ihrer Eingaben und den hochgeladenen Dokumenten erstellt wurden. Klicken Sie auf "Datenbank abfragen".
+4. Die Antworten der KI werden zusammen mit den Quellen in einer Liste angezeigt. Überprüfen Sie diese und passen Sie bei Bedarf Ihre Eingaben an und generieren Sie erneut.
+5. Klicken Sie auf "Podcast-Struktur generieren".
+6. Die erstellte Podcast-Struktur wird in einer Liste angezeigt. Sie können die Struktur übernehmen und für den nächsten Schritt speichern.
+
+**Wichtig:** Nach der Generierung des Podcast-Plans können Sie diesen sowie die Informationen aus der Informationseingabe herunterladen. Falls die Seite neu geladen oder geschlossen wird, gehen diese Informationen verloren. Aufgrund technischer Einschränkungen kann die erstellte Datenbank nicht heruntergeladen werden. Sie muss nach einer Wiederherstellung erneut erstellt werden.
+
+## Podcast-Durchführung
+
+Auf dieser Seite führen Sie Ihren Podcast durch. Folgen Sie der zuvor generierten Podcast-Struktur und nutzen Sie die vorbereiteten Fragen und Inhalte. Mithilfe einer Transkriptionssoftware können Sie die Antworten des Gastes einfügen und sich daraus Folgefragen generieren lassen. Am Ende der Durchführung können Sie sich eine Zusammenfassung des Podcasts erstellen lassen, um Ihren Hörern einen Mehrwert zu bieten.
+
+Viel Spaß beim Planen und Durchführen Ihres Podcasts mit unserem Tool!
+"""
+
 k_podcast_planning_general_explanation = """
-Willkommen in der Planungsphase Ihres Podcasts!
-In diesem Abschnitt sammeln wir alle wichtigen Informationen, die benötigt werden, um Ihren Podcast effektiv zu planen und durchführen zu können.
-Nach Hochladen der Dokumente, wird eine Datenbank erstellt.
-Basierend auf Ihren Angaben zu Ziel des Podcast usw. erstellt die KI Anfragen, um Informationen aus der Datenbank einzuholen.
-Mit den eingeholten Informationen kann die KI interessante Podcast-Ideen generieren
-Sie können nach Bedarf die Informationen ändern und ausgewählte Schritte nochmals durchlaufen.
+In diesem Abschnitt legen Sie alle relevanten Informationen für Ihren Podcast fest. Geben Sie Details über Ihren Gast und relevante Schlüsselwörter ein, legen Sie die Kernbotschaft Ihres Podcasts fest und laden Sie Dokumente hoch, die für die Generierung des Podcast-Plans verwendet werden. Sie haben auch die Möglichkeit, ein Thema einzugeben oder es im nächsten Schritt generieren zu lassen. Zudem können Sie einen bereits erstellten Podcast-Plan hochladen, um bestehende Informationen wiederherzustellen. Nutzen Sie die Vielfalt der Möglichkeiten, um einen umfassenden und ansprechenden Podcast zu planen.
 """
 
 k_podcast_planning_requirements_explanation = """
@@ -65,5 +97,5 @@ expander_queries_text = "Anfragen"
 spinner_retrieve_context_text = "Frage Datenbank ab"
 error_retrieve_context_text = "Kontext konnte nicht eingeholt werden"
 success_retrieve_context_text = "Kontext eingeholt"
-spinner_generate_podcast_structure = "Generiere Podcast-Struktur"
-success_generate_podcast_structure = "Podcast-Struktur erstellt"
+spinner_generate_podcast_structure = "Generiere Podcast-Plan"
+success_generate_podcast_structure = "Podcast-Plan erstellt"
