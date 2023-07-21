@@ -20,6 +20,13 @@ class LLMService:
         self.podcast_structure_key = "podcast_structure"
         self.init()
 
+        self.message_key = "message"
+        self.target_audience_key = "target_audience"
+        self.topic_key = "topic"
+        self.topic_gen_key = "topic_gen"
+        self.bg_info_key = "bg_info"
+        self.questions_key = "questions"
+        self.keywords_key = "keywords"
         # context query input variable keys
         self.summary_list_key = "summaries"
         self.requirements_key = "requirements"
@@ -97,11 +104,8 @@ class LLMService:
             message=message
         )
     
-    def generateContextQueries(self, summaries_list: List[str], requirements: str, background_information: str):
+    def generateContextQueries(self, topic, background_information, target_audience, message, keywords, questions, summaries_list: List[str]):
         # init llm
-        print(f"Summaries : {summaries_list}")
-        print(f"Req : {requirements}")
-        print(f"bg : {background_information}")
 
         llm = self.buildChatCompletionsLLM(0.9)
         # create context queries for vector database
@@ -109,7 +113,7 @@ class LLMService:
         resp = self.runSingleChatCompletionsLLM(
             llm,
             prompt = self.buildContextQueryPrompt(
-                requirements, background_information, "\n".join(summaries_list)
+                topic, background_information, target_audience, message, keywords, questions, "\n".join(summaries_list)
             )
         )
         print(f"Antwort: {resp}")
@@ -138,14 +142,13 @@ class LLMService:
 
         return contexts_and_sources
     
-    def generatePodcastStructure(self, background_information, requirements, research):
+    def generatePodcastStructure(self, topic, background_information, target_audience, message, keywords, questions, research):
         llm = self.buildChatCompletionsLLM(0.9)
         concatenated_research = "\n".join(research)
         try:
             resp = self.runSingleChatCompletionsLLM(
                 llm,
-                prompt = self.buildPodcastStructurePrompt(
-                    background_information, requirements, research
+                prompt = self.buildPodcastStructurePrompt(topic, background_information, target_audience, message, keywords, questions, research
                 )
             )
             print(f"PODCAST-Structure: {resp}")
@@ -154,28 +157,48 @@ class LLMService:
             print(f"GOT EXCEPTION {e}")
             return None
     
-    def buildContextQueryPrompt(self, requirements, background_information, summaries) -> str:
+    def buildContextQueryPrompt(self, topic, background_information, target_audience, message, keywords, questions, summaries) -> str:
         return PromptTemplate(
-                input_variables = [self.requirements_key, self.background_information_key, self.summary_list_key],
+                input_variables = [
+                    self.topic_key,
+                    self.bg_info_key,
+                    self.target_audience_key,
+                    self.message_key,
+                    self.keywords_key,
+                    self.questions_key,
+                    self.summary_list_key
+                ],
                 template = podcast_structure_context_queries,
             ).format(
-                requirements = requirements,
-                background_information = background_information,
+                topic = topic,
+                bg_info = background_information,
+                target_audience = target_audience,
+                message = message,
+                keywords = keywords,
+                questions = questions,
                 summaries = summaries
             )
     
-    def buildPodcastStructurePrompt(self, background_information, requirements, research) -> str:
+    def buildPodcastStructurePrompt(self, topic, background_information, target_audience, message, keywords, questions, research) -> str:
         return PromptTemplate(
             template = podcast_structure_planning_template,
             input_variables = [
-                self.background_information_key,
-                self.requirements_key,
+                self.topic_key,
+                self.bg_info_key,
+                self.target_audience_key,
+                self.message_key,
+                self.keywords_key,
+                self.questions_key,
                 self.research_key,
                 self.json_example_key
             ]
         ).format(
-            background_information = background_information,
-            requirements = requirements,
+            topic = topic,
+            bg_info = background_information,
+            target_audience = target_audience,
+            message = message,
+            keywords = keywords,
+            questions = questions,
             research = research,
             json_example = podcast_structure_json_example
         )

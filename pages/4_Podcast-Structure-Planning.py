@@ -60,9 +60,13 @@ else:
     if st.button("Anfragen generieren"):
         with st.spinner(spinner_generate_queries_text) as spin:
             st.session_state[llmService.queries_key] = llmService.generateContextQueries(
+                podcastManager.getStateVariableByKey(podcastManager.topic_key),
+                podcastManager.getStateVariableByKey(podcastManager.bg_info_key),
+                podcastManager.getStateVariableByKey(podcastManager.target_audience_key),
+                podcastManager.getStateVariableByKey(podcastManager.message_key),
+                podcastManager.getStateVariableByKey(podcastManager.keywords_key),
+                podcastManager.getStateVariableByKey(podcastManager.questions_key),
                 st.session_state[vectordb.SUMMARIES_KEY],
-                podcastManager.buildPodcastRequirementsString(),
-                st.session_state[podcastManager.bg_info_key]
             )
     if llmService.queries_key in st.session_state:
         if st.session_state[llmService.queries_key] == None:
@@ -97,8 +101,12 @@ else:
     if st.button("Generiere Podcast-Plan"):
         with st.spinner(spinner_generate_podcast_structure):
             st.session_state[llmService.podcast_structure_key] = llmService.generatePodcastStructure(
-                background_information = podcastManager.getStateVariableByKey(podcastManager.bg_info_key),
-                requirements = podcastManager.buildPodcastRequirementsString(),
+                podcastManager.getStateVariableByKey(podcastManager.topic_key),
+                podcastManager.getStateVariableByKey(podcastManager.bg_info_key),
+                podcastManager.getStateVariableByKey(podcastManager.target_audience_key),
+                podcastManager.getStateVariableByKey(podcastManager.message_key),
+                podcastManager.getStateVariableByKey(podcastManager.keywords_key),
+                podcastManager.getStateVariableByKey(podcastManager.questions_key),
                 research = [cas[0] for cas in st.session_state[llmService.contexts_and_sources_key]]
             )
     if llmService.podcast_structure_key in st.session_state:
