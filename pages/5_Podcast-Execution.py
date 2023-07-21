@@ -8,7 +8,11 @@ podcastManager = PodcastManager()
 
 st.title("Podcast-Durchführung")
 
-if podcastManager.isPodcastStructureSet():
+if not podcastManager.isPodcastStructureSet():
+    st.error("Bitte nutzen Sie zunächst den Podcast-Planer")
+elif not llmService.isAPIKeySet():
+    st.error("Bitte zunächst API-Schlüssel hinzufügen.")
+else:
     st.success("Podcast ist bereit zum Durchführen!")
     with st.sidebar:
         st.radio(
@@ -19,6 +23,3 @@ if podcastManager.isPodcastStructureSet():
         )
     if st.button(f"Weiter zu {podcastManager.getSectionByIndex(podcastManager.getCurrentSection())}"):
         podcastManager.nextSection()
-    
-else:
-    st.subheader("Bitte nutzen Sie zunächst den Podcast-Planer")

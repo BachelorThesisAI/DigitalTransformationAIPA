@@ -26,6 +26,8 @@ if podcastManager.bg_info_key not in st.session_state:
     st.error("Keine Informationen zum Podcast eingegeben. Bitte gehen Sie auf die Seite zur Informationseingabe und korrigieren dies.")
 elif st.session_state[podcastManager.topic_key] == "UNDEFINED":
     st.error("Kein Thema zum Podcast angegeben. Bitte geben Sie es an oder nutzen Sie den Themengenerator")
+elif not llmService.isAPIKeySet():
+    st.error("Bitte zunächst API-Schlüssel hinzufügen.")
 else:
     st.divider()
     st.write(file_upload_explanation)
