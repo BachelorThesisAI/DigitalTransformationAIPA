@@ -14,10 +14,11 @@ def setSelection():
 
 st.title("Themen-Generator")
 st.write("")
-if not podcastManager.isPodcastInfoSet():
-    st.error("Bitte geben Sie zunächst Informationen zum Podcast ein.")
-elif not llmService.isAPIKeySet():
+
+if not llmService.isAPIKeySet():
     st.error("Bitte zunächst API-Schlüssel hinzufügen.")
+elif not podcastManager.isPodcastInfoSet():
+    st.error("Bitte geben Sie zunächst Informationen zum Podcast ein.")
 else:
     st.write("themen-generator explanation")
     

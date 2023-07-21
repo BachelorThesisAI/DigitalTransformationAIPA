@@ -8,10 +8,10 @@ podcastManager = PodcastManager()
 
 st.title("Podcast-Durchführung")
 
-if not podcastManager.isPodcastStructureSet():
-    st.error("Bitte nutzen Sie zunächst den Podcast-Planer")
-elif not llmService.isAPIKeySet():
+if not llmService.isAPIKeySet():
     st.error("Bitte zunächst API-Schlüssel hinzufügen.")
+elif not podcastManager.isPodcastStructureSet():
+    st.error("Bitte nutzen Sie zunächst den Podcast-Planer")
 else:
     st.success("Podcast ist bereit zum Durchführen!")
     with st.sidebar:
