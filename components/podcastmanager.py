@@ -1,6 +1,7 @@
 import streamlit as st
 from typing import List
 from json import loads, dumps
+from langchain.schema.messages import HumanMessage, AIMessage
 
 class PodcastManager:
     def __init__(self):
@@ -16,7 +17,13 @@ class PodcastManager:
         self.questions_key = "questions"
         self.keywords_key = "keywords"
 
+        self.current_content_key = "current_content"
+        self.current_content_index_key = "current_content_index"
+
+        self.started_podcast_key = "started"
         self.podcast_topics_selection_key = "topicselection"
+        self.chat_history_key = "chat_history"
+        self.guest_response_key = "guest_response"
         self.init()
 
     def init(self):
@@ -84,11 +91,36 @@ class PodcastManager:
             return False
     
     def getSectionByIndex(self, index: int):
-        return [key for key in st.session_state[self.podcast_structure_key].keys()][index+1]
+        return [key for key in st.session_state[self.podcast_structure_key].keys()][index]
+    
+    def getCurrentContentIndex(self):
+        return st.session_state[self.current_content_index_key]
     
     def nextSection(self):
+        st.session_state[self.current_content_index_key] = 0
+        st.session_state[self.CURRENT_SECTION_KEY] = st.session_state[self.CURRENT_SECTION_KEY]+1
+        st.session_state[self.current_content_key] = self.getContentForCurrentSection()[0]
+        
+    def hasNextSection(self):
         if st.session_state[self.CURRENT_SECTION_KEY] < len(st.session_state[self.podcast_structure_key].keys())-1:
-            st.session_state[self.CURRENT_SECTION_KEY] = st.session_state[self.CURRENT_SECTION_KEY]+1
+            return True
+        return False
+
+    def nextContent(self):
+        nextIndex = st.session_state[self.current_content_index_key] + 1
+        st.session_state[self.current_content_index_key] = nextIndex
+        st.session_state[self.current_content_key] = self.getContentForCurrentSection()[nextIndex]
+
+    def getNextContent(self):
+        nextIndex = st.session_state[self.current_content_index_key] + 1
+        st.session_state[self.current_content_key] = self.getContentForCurrentSection()[nextIndex]
+
+    def hasNextContent(self):
+        try:
+            self.getContentForCurrentSection()[self.getCurrentContentIndex() + 1]
+            return True
+        except:
+            return False
     
     def buildPodcastPlan(self) -> str:
         podcastPlan = [
@@ -108,3 +140,55 @@ class PodcastManager:
 
         for i, key in enumerate(keys):
             self.setStateVariableByKey(key, value=planList[i])
+    
+    def getContentForCurrentSection(self):
+        return st.session_state[self.podcast_structure_key][self.getSectionByIndex(self.getCurrentSection())]
+    
+    def startPodcast(self):
+        st.session_state[self.started_podcast_key] = True
+        st.session_state[self.current_content_index_key] = 0
+        st.session_state[self.current_content_key] = self.getContentForCurrentSection()[0]
+    
+    def isPodcastStarted(self):
+        try:
+            st.session_state[self.started_podcast_key]
+            return True
+        except:
+            return False
+    
+    def finishPodcast(self):
+        st.session_state["podcast_finished"] = True
+
+    def isPodcastFinished(self):
+        try:
+            return st.session_state["podcast_finished"]
+        except:
+            return False
+    
+    def setCurrentContent(self, content):
+        st.session_state[self.current_content_key] = content
+    
+    def getChatHistory(self):
+        return st.session_state[self.chat_history_key]
+    
+    def setGuestResponse(self, response):
+        st.session_state[self.guest_response_key] = response
+    
+    def getGuestResponse(self):
+        return st.session_state[self.guest_response_key]
+    
+    def addToChatHistory(self):
+        history = []
+        try:
+            history = self.getChatHistory()
+        except:
+            pass
+        history.append(
+            AIMessage(content=self.getCurrentContent())
+        )
+        history.append(
+            HumanMessage(content=self.getGuestResponse())
+        )
+    
+    def getCurrentContent(self):
+        return st.session_state[self.current_content_key]

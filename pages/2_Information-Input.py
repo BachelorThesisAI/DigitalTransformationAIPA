@@ -18,8 +18,12 @@ st.divider()
 st.subheader("Bestehenden Podcast-Plan hochladen")
 st.write("Sollten Sie bereits einen Podcast-Plan haben, können Sie diesen hier hochladen. Der hochgeladene Plan wird verwendet, um Ihre früheren Informationen wiederherzustellen und den Planungsprozess zu beschleunigen.")
 file = st.file_uploader(label="Podcast-Plan hochladen")
-if file != None:
-    podcastManager.loadPodcastPlan(StringIO(file.getvalue().decode("utf-8")).read())
+
+if st.button("Podcast laden"):
+    if file != None:
+        podcastManager.loadPodcastPlan(StringIO(file.getvalue().decode("utf-8")).read())
+        podcastManager.setPodcastStructure()
+        st.success("Daten geladen, Sie können zur Podcast-Durchführung übergehen!")
 st.divider()
 st.subheader("Informationen zum Gast und seinem Hintergrund")
 st.write(guest_backgroundinfo_explanation)
