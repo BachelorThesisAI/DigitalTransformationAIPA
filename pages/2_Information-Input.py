@@ -1,5 +1,5 @@
 #import api_key
-#import key
+import key
 import streamlit as st
 from constants import *
 from components.llmservice import LLMService

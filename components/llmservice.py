@@ -9,7 +9,7 @@ from prompts import *
 from components.podcastmanager import PodcastManager
 from typing import List, Tuple
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from json import loads
+from json import loads, dumps
 
 class LLMService:
 
@@ -46,7 +46,7 @@ class LLMService:
         environ[self.OPENAI_API_KEY] = API_KEY
         try:
             llm = OpenAI(temperature=0.9) # type: ignore
-            llm("")
+            llm("SAY YES:")
             print("We did it here")
             session_state[self.OPENAI_API_KEY] = API_KEY
             return True
@@ -134,7 +134,7 @@ class LLMService:
                                   chain_type="stuff", 
                                   retriever=retriever, 
                                   return_source_documents=True)
-        queries = [queries[0]]
+        #queries = [queries[0]]
         contexts_and_sources = [
             (print(f"Query: {query}"), rqa(query))[1] for query in queries
         ]
@@ -145,6 +145,7 @@ class LLMService:
     def generatePodcastStructure(self, topic, background_information, target_audience, message, keywords, questions, research):
         llm = self.buildChatCompletionsLLM(0.9)
         concatenated_research = "\n".join(research)
+        research = "\n".join(session_state["SUMMARIES"])
         try:
             resp = self.runSingleChatCompletionsLLM(
                 llm,
@@ -246,60 +247,76 @@ class LLMService:
         return SystemMessage(content=msg)
     
     def generateContentForCurrentSection(self):
-
-        print(f"Current Content: {self.podcastManager.getCurrentContent()}")
-        print(f"Guest Response: {self.podcastManager.getGuestResponse()}")
-        
         nextContent = "UNDEFINED"
         if self.podcastManager.hasNextContent():
             nextContent = self.podcastManager.getNextContent()
         llm = self.buildChatCompletionsLLM(0.9)
         prompt = PromptTemplate(
             input_variables=[
-                "followup_json_example",
+                "section_content_a",
+                "followup_example",
+                "section_content_b",
                 "bg_info",
                 "target_audience",
                 "summaries",
+                "current_section",
                 "last_question",
-                "next_question",
                 "guest_response"
             ],
             template=podcast_decision_message_prompt
         ).format(
+            section_content_a = podcast_decision_section_exp1,
+            followup_example = podcast_followup_json_example,
+            section_content_b = podcast_decision_section_exp1,
             bg_info = self.podcastManager.getStateVariableByKey("bg_info"),
             target_audience = self.podcastManager.getStateVariableByKey("target_audience"),
             summaries = self.podcastManager.getStateVariableByKey("summaries"),
+            current_section = dumps(self.podcastManager.getContentForCurrentSection(), ensure_ascii=False, indent=4),
             last_question = self.podcastManager.getCurrentContent(),
-            next_question = nextContent,
-            followup_json_example = podcast_followup_json_example,
             guest_response = self.podcastManager.getGuestResponse()
         )
-        try:
-            resp = self.runSingleChatCompletionsLLM(
-                llm, prompt
-            )
-            print(f"RESPONSE: {resp}")
-        except:
-            return None
+        #try:
+        resp = self.runSingleChatCompletionsLLM(
+            llm, prompt
+        )
 
-    def generateContentForCurrentSections(self, guest_response):
+        json_resp = loads(resp.lower())
+        rqa = RetrievalQA.from_chain_type(llm=self.buildLLM(0.5), 
+                                chain_type="stuff", 
+                                retriever=session_state["RETRIEVER"], 
+                                return_source_documents=True)
         
-        llm = self.buildChatCompletionsLLM(0.9)
-        currentSectionName = self.podcastManager.getSectionByIndex(self.podcastManager.getCurrentSection())
-        # get messages
-        messages = [
-            self.getSystemMessage()
-        ]
-        try:
-            messages += session_state[currentSectionName]
-        except:
-            pass
+        database_response = rqa(json_resp["abfrage"])["result"]
 
-        resp = self.runMultipleChatCompletionsLLM(llm, messages)
-        try:
-            session_state[currentSectionName].append(AIMessage(content=resp))
-        except:
-            session_state[currentSectionName] = [AIMessage(content=resp)]
+        print(f"Current Content: {self.podcastManager.getCurrentContent()}")
+        print(f"Guest Response: {self.podcastManager.getGuestResponse()}")
+        print(f"First resp: {resp}")
+        print(f"Database response: {database_response}")
+
+        content_content_insertion_prompt = PromptTemplate(
+            input_variables=[
+                "database_response",
+                "followup_question"
+            ],
+            template=podcast_content_insertion_prompt
+        ).format(
+            database_response=database_response,
+            followup_question=json_resp["folgefrage"]
+        )
+
+        merged_question = self.runSingleChatCompletionsLLM(
+            llm, content_content_insertion_prompt
+        )
+
+        print(f"Merged question: {merged_question}")
+        
+        if isinstance(merged_question, str):
+            return merged_question
+        else:
+            return None
+        #except Exception as e:
+        #    print(f"Exception: {e}")
+        #    return None
     
     def generatePodcastSummary(self):
         session_state["podcast_summary"] = "PODCAST SUMMARY"

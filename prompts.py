@@ -66,24 +66,16 @@ Die Informationen aus der Recherche sollen in die Podcast-Planung und die Fragen
 Recherche:
 {research}
 
-Folgend ist ein Beispiel mit Abschnitten, welche Themen ein Podcast abdecken kann, auf die er sich aber nicht beschränken muss:
-Strategien: Welche unterschiedlichen Strategien nutzen Unternehmen bei der digitalen Transformation?
-Herausforderungen: Was sind die typischen Herausforderungen, mit denen ein Unternehmen während der digitalen Transformation konfrontiert sein könnte, und wie können diese gemildert werden?
-Best Practices: Was sind die Best Practices für die digitale Transformation? Was hat bei einigen Unternehmen gut funktioniert, wovon andere lernen können?
-Rolle der Mitarbeiter: Wie wirkt sich die digitale Transformation auf die Mitarbeiter aus? Welche Rolle spielen sie im Transformationsprozess und wie können sie am besten unterstützt werden?
-Technologien: Welche neuesten Technologien helfen bei der digitalen Transformation? Wie werden KI, maschinelles Lernen, Blockchain und andere Technologien genutzt?
-Zukünftige Trends: Was sind die zukünftigen Trends in der digitalen Transformation? Wie wird es sich weiterentwickeln?
-Branchenspezifische Besonderheiten: Wie unterscheidet sich die digitale Transformation in den verschiedenen Branchen? Welche branchenspezifischen Überlegungen oder Herausforderungen gibt es?
-Lessons Learned: Was sind die wichtigsten Lehren aus gescheiterten Initiativen zur digitalen Transformation?
-
-
 Dabei soll der Podcast-Plan im JSON-Format als hierarchische Struktur mit Abschnitten als Schlüssel und dazugehörigen Fragen oder Inhalt als Liste definiert werden.
 Dabei soll immer eine Einführung enthalten sein und ein Schlussteil. Diese sollen immer als "Einführung" und "Schlussteil" bezeichnet werden.
-Bei Einleitung und Schlussteil sollten keine Fragen vorkommen, sondern Inhalt wie z.B. Begrüßung des Gastes und so weiter. Im Schlussteil sollten neben einem Recap ggf. weitere Themen vorkommen.
+Bei Einleitung und Schlussteil sollten keine Fragen vorkommen, sondern Inhalt wie z.B. "Begrüßung von Max Mustermann" und so weiter. Im Schlussteil sollten neben einem Recap ggf. weitere Themen vorkommen.
 Die Schlüssel anderer Abschnitte als Einleitung und Schlussteil sollen einen passenden Namen tragen, der das Wesen des Abschnitts umreißt, z.B. Automatisierung.
 Anders als bei Einleitung und Schlussteil können die anderen Abschnitte Fragen und Inhalte beinhalten, sie müssen mindestens 5 Fragen oder Fragen mit Inhalten beinhalten.
 Wenn zum Beispiel der Abschnitt über Automatisierung ist und in der Recherche ein interessanter Fakt vorkommt, der zum Abschnitt passt und der helfen könnte die Diskussion anzustoßen, schreibe diesen Fakt hin und generiere eine passende Frage.
 Die Fragen sollten immer an den Gast und seine Erfahrungen gerichtet sein und somit oft mit seinem Namen beginnen, wie: Herr Mustermann, hatten Sie die gleiche Erfahrung gemacht?
+Die Inhalte in den einzelnen Abschnitten sollen sich an die Recherchierten Daten lehnen.
+Wenn beispielsweise herausgefunden wurde, dass automatisierung mehr gewinn einbringt und der Abschnitt über automatisierung ist, dann könnte der Abschnitt folgendes beinhalten:
+Automatisierung: Automatisierung bringt Gewinn ein. Was denken Sie darüber? 
 Nachfolgend ein Beispiel eines kurzen Podcast-Plans im JSON-Format
 Beispiel:
 {json_example}
@@ -112,7 +104,7 @@ Die Themen sollen zum Hintergrund des Gastes und seinen Erfahrungen passen. Zum 
 Hintergrundinformationen zum Gast:
 {bg_info}
 
-Die Themen sollen zur Zielgruppe passen und dabei die Eigenschaften der Zielgruppe berücksichtigen. Akademiker würden zum Beispiel komplexere Themen bevorzugen.
+Die Anfragen sollen Fragen für die Zielgruppe passen
 Zielgruppe:
 {target_audience}
 
@@ -124,7 +116,7 @@ Diese Wörter sollen so oft es geht in der Wortwahl verwendet werden, ohne den S
 SEO-Keywords:
 {keywords}
 
-Falls hier enthalten, können diese Hinweise auf mögliche Themen geben.
+Diese Fragen sollten im Podcast geklärt werden
 Fragen: 
 {questions}
 
@@ -183,9 +175,6 @@ Beispielhafter Gedankengang:
 Da das Unternehmen selbst
 """
 
-podcast_document_summarize_prompt = """
-Schreibe eine Zusammenfassung 
-"""
 
 
 podcast_system_message_prompt = """
@@ -224,11 +213,40 @@ GastAntwort:
 Deine Antwort:
 """
 
-podcast_decision_message_prompt = """
+podcast_content_insertion_prompt = """
+Falls die Antwort aus der Datenbank eine passende Information für die Folgefrage geliefert hat, formuliere die Folgefrage so um, dass sie die Information enthält.
+Andernfalls behalte die ursprüngliche Folgefrage.
+Wichtig: Die Antwort soll in jedem Fall auf Deutsch sein!
+
+Beispiel A:
+Antwort aus der Datenbank: Bei Unternehmen X haben sich Nach der Automatisierung die Prozesskosten halbiert.
+Folgefrage: Welche Auswirkungen hatte die Automatisierung auf Ihr Unternehmen?
+Neue Folgefrage: In einem Fall haben sich bei einem Unternehmen nach der Automatisierung die Prozesskosten halbiert. Haben Sie ähnliche Effekte bemerkt?
+
+Beispiel B:
+Antwort aus der Datenbank: I don't know
+Folgefrage: Welche Auswirkungen hatte die Automatisierung auf Ihr Unternehmen?
+Neue Folgefrage: Welche Auswirkungen hatte die Automatisierung auf Ihr Unternehmen?
+
+Beispiel C:
+Antwort aus der Datenbank: Bitcoin hat die Welt im Sturm erobert. Obwohl Investoren die neue Technologie größtenteils noch nicht verstehen, hat Bitcoin trotzdem viele Gelder angezogen.
+Folgefrage: Welche Auswirkungen hatte die Automatisierung auf Ihr Unternehmen?
+
+Antwort aus der Datenbank:
+{database_response}
+
+Folgefrage:
+{followup_question}
+
+Neue Folgefrage:
+"""
+
+podcast_decision_message_prompt_x = """
 Du bist ein professioneller Podcaster und führst gerade einen Podcast mit einem Gast, von dem du nach einer Frage eine Antwort erhalten hast.
 Du sollst entscheiden, ob du eine Folgefrage stellst oder nichts zur Antwort des Gastes sagst.
 Die Folgefrage kann mit Informationen aus der Datenbank angereichert werden, um interessanter für die Zuhörer zu sein.
 Zum Beispiel wenn sich die Folgefrage auf die Auswirkungen der Automatisierung bezieht und die Datenbank eine Fallstudie über finanzielle Auswirkungen der Automatisierung beinhaltet, sollst du die Folgefrage und die Anfrage an die Datenbank, die hilfreiche Informationen liefern könnte im JSON-Format hinschreiben.
+
 Wenn du keine Informationen benötigst, schreibe statt der Anfrage einfach NONE
 
 Beispiel:
@@ -259,8 +277,99 @@ Die Antwort vom Gast:
 Deine Entscheidung:
 """
 
-podcast_followup_json_example = """
-{
+podcast_decision_message_prompt = """
+Nachdem du in einem Podcast mit einem Gast etwas gesagt hast, bekommst du vom Gast eine Antwort.
+Du sollst entscheiden, ob du eine spezifische Folgefrage, angereichert mit Datenbankinformationen stellst oder nichts zur Antwort des Gastes sagst.
+Die Folgefragen sollen dazu dienen, mehr Informationen oder Beispiele herauszuholen basierend auf der letzten Antwort des Gastes. Dies können Fragen sein, die das Was, Wie oder Warum ansteuern.
+Dafür erhälst du Informationen zum jetzigen Abschnitt im JSON-Format, sowie das zuletzt Gesagte und die Antwort des Gastes und Informationen der in der Datenbank enthaltenen Dokumente.
+Die Folgefrage soll logisch zum Abschnitt und den darin geplanten Fragen, bzw. Inhalten, sowie der Erfahrung des Gastes passen und darf keine Wiederholung von bereits im Abschnitt geplantem Inhalt oder geplanten Fragen sein sein.
+Die Folgefrage soll an das zuletzt Gesagte und die Antwort des Gastes anknüpfen.
+Es macht nur Sinn weiter nachzufragen, wenn der Gast zuvor eine sinnvolle Antwort gegeben hat. Wenn er nicht wusste stell keine weitere Folgefrage.
+Du sollst im JSON-Format antworten und dabei eine Folgefrage und eine passende Abfrage an die Datenbank formulieren.
+
+Beispiel A:
+
+Hintergrundinformationen zum Gast :
+Max Mustermann CEO, Erfahrung mit Automatisierung, speziell Prozessautomatisierung
+
+Zielgruppe:
+Akademiker
+
+Zusammenfassungen der in der Datenbank enthaltenen Dokumente:
+Bei diesem Dokument handelt es sich um eine Fallstudie über Prozessautomatisierung in einer Handelsfirma. Sie beschreibt sowohl finanzielle, als auch arbeitskulturelle Auswirkungen der Prozessautomatisierung auf das Unternehmen und die Mitarbeiter.
+
+Informationen zum Abschnitt:
+{section_content_a}
+
+Letzte Frage:
+Max Mustermann, Was denken Sie über Automatisierung?
+
+Gastantwort:
+Ich denke, Automatisierung ist heutzutage unumgänglich und sollte von jeder Organisation in jedem Fachbereich umgesetzt werden. Wir selbst hatten eine Reihe von Automatisierungsprojekten
+
+KI-Antwort zu Beispiel A:
+{followup_example}
+
+Beispiel B:
+
+Hintergrundinformationen zum Gast :
+Max Mustermann CEO, Erfahrung mit Automatisierung, speziell Prozessautomatisierung
+
+Zielgruppe:
+Akademiker
+
+Zusammenfassungen der in der Datenbank enthaltenen Dokumente:
+Bei diesem Dokument handelt es sich um eine Fallstudie über Prozessautomatisierung in einer Handelsfirma. Sie beschreibt sowohl finanzielle, als auch arbeitskulturelle Auswirkungen der Prozessautomatisierung auf das Unternehmen und die Mitarbeiter.
+
+Informationen zum Abschnitt:
+{section_content_b}
+
+Letzte Frage:
+Welche Automatisierungsprojekte haben Sie betreut?
+
+Gastantwort:
+Um ehrlich zu sein habe ich bisher keine Automatisierungsprojekte betreut, da ich die Firma nach der Digitalen Transformation übernommen hatte.
+
+KI-Antwort zu Beispiel B:
+NONE
+
+
+Hier sind die echten Informationen aus dem laufenden Podcast:
+
+Hintergrundinformationen zum Gast:
+{bg_info}
+
+Zielgruppe:
+{target_audience}
+
+Zusammenfassungen der in der Datenbank enthaltenen Dokumente:
+{summaries}
+
+Informationen zum Abschnitt:
+{current_section}
+
+Letzte Frage:
+{last_question}
+
+Die Antwort vom Gast:
+{guest_response}
+
+Entscheide nun, ob eine Folgefrage, die den Podcast für die Zielgruppe interessanter machen würde besteht, oder nicht.
+Wenn ja, schreibe im JSON-format die Folgefrage und die Abfrage an die Datenbank wie im Beispiel gezeigt, andernfalls schreibe nur das Wort in Großbuchstaben:
+NONE
+
+KI-Antwort:
+"""
+
+podcast_decision_section_exp1 = """{
+  "Automatisierung": [
+    "Max Mustermann, Was denken Sie über Automatisierung?",
+    "Welche Automatisierungsprojekte hatten Sie betreut?"
+  ]
+}
+"""
+
+podcast_followup_json_example = """{
   "Folgefrage": "Max Mustermann, sie haben die automatisierten Prozesse erwähnt. Welche Auswirkungen hatten diese auf Ihre Quartalszahlen",
   "Abfrage": "Finanzielle Auswirkungen der Automatisierung in einem Unternehmen"
 }
