@@ -16,6 +16,8 @@ class PodcastManager:
         self.bg_info_key = "bg_info"
         self.questions_key = "questions"
         self.keywords_key = "keywords"
+        self.format_key = "format"
+        self.podcast_summary = "podcast_summary"
 
         self.current_content_key = "current_content"
         self.current_content_index_key = "current_content_index"
@@ -171,6 +173,16 @@ class PodcastManager:
     def getChatHistory(self):
         return st.session_state[self.chat_history_key]
     
+    def getChatHistoryAsString(self):
+        chat_history = self.getChatHistory()
+        new_string = ""
+        for msg in chat_history:
+            if isinstance(msg, HumanMessage):
+                new_string += f"\nGast: {msg.content}\n"
+            elif isinstance(msg, AIMessage):
+                new_string += f"\nPodcast-Host: {msg.content}\n"
+        return new_string
+    
     def setGuestResponse(self, response):
         st.session_state[self.guest_response_key] = response
     
@@ -189,6 +201,8 @@ class PodcastManager:
         history.append(
             HumanMessage(content=self.getGuestResponse())
         )
+        st.session_state[self.chat_history_key] = history
     
     def getCurrentContent(self):
         return st.session_state[self.current_content_key]
+    

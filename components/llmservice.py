@@ -34,6 +34,7 @@ class LLMService:
         # podcast structure input variable keys
         self.research_key = "research"
         self.json_example_key = "json_example"
+        self.format_key = "format"
         self.podcastManager = PodcastManager()
     
     def init(self):
@@ -134,7 +135,7 @@ class LLMService:
                                   chain_type="stuff", 
                                   retriever=retriever, 
                                   return_source_documents=True)
-        #queries = [queries[0]]
+        queries = [queries[0]]
         contexts_and_sources = [
             (print(f"Query: {query}"), rqa(query))[1] for query in queries
         ]
@@ -146,17 +147,17 @@ class LLMService:
         llm = self.buildChatCompletionsLLM(0.9)
         concatenated_research = "\n".join(research)
         research = "\n".join(session_state["SUMMARIES"])
-        try:
-            resp = self.runSingleChatCompletionsLLM(
-                llm,
-                prompt = self.buildPodcastStructurePrompt(topic, background_information, target_audience, message, keywords, questions, research
-                )
+        #try:
+        resp = self.runSingleChatCompletionsLLM(
+            llm,
+            prompt = self.buildPodcastStructurePrompt(topic, background_information, target_audience, message, keywords, questions, research
             )
-            print(f"PODCAST-Structure: {resp}")
-            return loads(resp)
-        except Exception as e:
-            print(f"GOT EXCEPTION {e}")
-            return None
+        )
+        print(f"PODCAST-Structure: {resp}")
+        return loads(resp)
+        #except Exception as e:
+        #    print(f"GOT EXCEPTION {e}")
+        #    return None
     
     def buildContextQueryPrompt(self, topic, background_information, target_audience, message, keywords, questions, summaries) -> str:
         return PromptTemplate(
@@ -191,7 +192,8 @@ class LLMService:
                 self.keywords_key,
                 self.questions_key,
                 self.research_key,
-                self.json_example_key
+                self.json_example_key,
+                self.format_key
             ]
         ).format(
             topic = topic,
@@ -201,7 +203,8 @@ class LLMService:
             keywords = keywords,
             questions = questions,
             research = research,
-            json_example = podcast_structure_json_example
+            json_example = podcast_structure_json_example,
+            format = self.podcastManager.getStateVariableByKey(self.format_key)
         )
     
     def buildChatCompletionsLLM(self, temperature: float):
@@ -319,4 +322,5 @@ class LLMService:
         #    return None
     
     def generatePodcastSummary(self):
-        session_state["podcast_summary"] = "PODCAST SUMMARY"
+        all_msg = self.podcastManager.getChatHistory()
+        session_state[self.podcastManager.podcast_summary] = "PODCAST SUMMARY"

@@ -1,14 +1,16 @@
 import streamlit as st
 from components.podcastmanager import PodcastManager
 from components.llmservice import LLMService
+from components.vectordb import VectorDatabaseService
 #import key
 
 llmService = LLMService()
 podcastManager = PodcastManager()
+vectordb = VectorDatabaseService()
 
 def onSend():
     with st.spinner("Generiere nächste Frage"):
-        
+        podcastManager.addToChatHistory()
         content = llmService.generateContentForCurrentSection()
         if content:
             podcastManager.setCurrentContent(content)
@@ -44,6 +46,15 @@ else:
 
     # WHEN PODCAST IS RUNNING
     if podcastManager.isPodcastStarted():
+
+        if not podcastManager.hasNextSection():
+            if podcastManager.podcast_summary in st.session_state:
+                if st.session_state[podcastManager.podcast_summary] != None:
+                    st.write(st.session_state[podcastManager.podcast_summary])
+            else:
+                st.session_state[podcastManager.podcast_summary] = vectordb.summarize_text(podcastManager.getChatHistoryAsString())
+                st.write(st.session_state[podcastManager.podcast_summary])
+            pass
         
         with st.chat_message("Podcast-Assistant"):
             st.write(podcastManager.getCurrentContent())

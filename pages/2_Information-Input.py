@@ -1,5 +1,5 @@
 #import api_key
-import key
+#import key
 import streamlit as st
 from constants import *
 from components.llmservice import LLMService
@@ -27,11 +27,15 @@ if st.button("Podcast laden"):
 st.divider()
 st.subheader("Informationen zum Gast und seinem Hintergrund")
 st.write(guest_backgroundinfo_explanation)
-bg_info = st.text_area("")
+if podcastManager.bg_info_key in st.session_state:
+    st.session_state.bg_info_gen = podcastManager.getStateVariableByKey(podcastManager.bg_info_key)
+bg_info = st.text_area("", key="bg_info_gen")
 st.divider()
 st.subheader("Zielgruppe")
 st.write("Angestrebte Zielgruppe: An wen richten Sie diesen Podcast hauptsächlich? Sollen es Fachleute aus einer bestimmten Branche sein, ein breiteres Publikum oder eine spezifische demografische Gruppe? Ihre Zielgruppe kann die Art der Fragen und die Diskussionstiefe beeinflussen.")
-target_audience = st.text_area(" ")
+if podcastManager.target_audience_key in st.session_state:
+    st.session_state.target_audience_gen = podcastManager.getStateVariableByKey(podcastManager.target_audience_key)
+target_audience = st.text_area(" ", key="target_audience_gen")
 st.divider()
 st.subheader("Thema (optional)")
 st.write("Geben Sie hier das Hauptthema Ihres Podcasts an. Falls Sie unsicher sind, lassen Sie das Feld leer - das KI-Tool hilft Ihnen im nächsten Schritt dabei, ein passendes Thema zu generieren.")
@@ -41,15 +45,29 @@ topic = st.text_area("   ", key="topic_gen")
 st.divider()
 st.subheader("Kernbotschaft")
 st.write("Definieren Sie hier die zentrale Aussage oder Botschaft, die Ihre Hörer aus dem Podcast mitnehmen sollen. Diese wird als Leitlinie für die Generierung der Podcast-Struktur genutzt.")
-message = st.text_area("    ")
+if podcastManager.message_key in st.session_state:
+    st.session_state.message_gen = podcastManager.getStateVariableByKey(podcastManager.message_key)
+message = st.text_area("    ", key="message_gen")
 st.divider()
 st.subheader("Fragen")
 st.write("Geben Sie hier Fragen an, die Sie während des Podcasts stellen möchten. Diese werden in die Podcast-Struktur aufgenommen.")
-questions = st.text_area("     ")
+if podcastManager.questions_key in st.session_state:
+    st.session_state.questios_gen = podcastManager.getStateVariableByKey(podcastManager.questions_key)
+questions = st.text_area("     ", key="questions_gen")
 st.divider()
 st.subheader("SEO-Keywords")
 st.write("Fügen Sie hier die SEO-Keywords ein, die zu Ihrem Podcast-Thema passen. Diese werden bei der Erstellung des Podcast-Plans berücksichtigt, um die Auffindbarkeit Ihres Podcasts zu optimieren.")
-keywords = st.text_area("      ")
+if podcastManager.keywords_key in st.session_state:
+    st.session_state.keywords_gen = podcastManager.getStateVariableByKey(podcastManager.keywords_key)
+keywords = st.text_area("      ", key="keywords_gen")
+st.divider()
+st.subheader("Format")
+st.write("""Definieren Sie hier das Format Ihres Podcast. Schreiben Sie dazu nacheinander die einzelnen Abschnitte hin, die der Podcast enthalten und für die dann die Fragen erstellt werden sollen.  
+  
+**Hinweis**: Einleitung und Schlussteil sind bereits immer enthalten und müssen nicht erwähnt werden""")
+if podcastManager.format_key in st.session_state:
+    st.session_state.format_gen = podcastManager.getStateVariableByKey(podcastManager.format_key)
+format = st.text_area("      ", key="format_gen")
 
 st.divider()
 
@@ -77,4 +95,8 @@ if st.button(generate_button_text):
     podcastManager.setStateVariableByKey(
         podcastManager.keywords_key,
         keywords
+    )
+    podcastManager.setStateVariableByKey(
+        "format",
+        format
     )

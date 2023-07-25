@@ -62,20 +62,24 @@ Falls enthalten sollen diese Fragen in passenden Abschnitten eingefügt werden
 Fragen: 
 {questions}
 
-Die Informationen aus der Recherche sollen in die Podcast-Planung und die Fragen mit einfließen
+Die Informationen aus der Recherche sollen in die Podcast-Planung und die Fragen mit einfließen. Die Recherche soll 
 Recherche:
 {research}
 
+Der Podcast soll diese Abschnitte beinhalten.
+Format:
+{format}
+
 Dabei soll der Podcast-Plan im JSON-Format als hierarchische Struktur mit Abschnitten als Schlüssel und dazugehörigen Fragen oder Inhalt als Liste definiert werden.
 Dabei soll immer eine Einführung enthalten sein und ein Schlussteil. Diese sollen immer als "Einführung" und "Schlussteil" bezeichnet werden.
-Bei Einleitung und Schlussteil sollten keine Fragen vorkommen, sondern Inhalt wie z.B. "Begrüßung von Max Mustermann" und so weiter. Im Schlussteil sollten neben einem Recap ggf. weitere Themen vorkommen.
+Bei Einleitung und Schlussteil sollten keine Fragen vorkommen, sondern Inhalt wie z.B. "Begrüßung von (Name des Gastes) und (Hintergrundinformationen zum Gast)" und so weiter. Im Schlussteil sollten neben einem Recap ggf. weitere Themen vorkommen.
 Die Schlüssel anderer Abschnitte als Einleitung und Schlussteil sollen einen passenden Namen tragen, der das Wesen des Abschnitts umreißt, z.B. Automatisierung.
 Anders als bei Einleitung und Schlussteil können die anderen Abschnitte Fragen und Inhalte beinhalten, sie müssen mindestens 5 Fragen oder Fragen mit Inhalten beinhalten.
 Wenn zum Beispiel der Abschnitt über Automatisierung ist und in der Recherche ein interessanter Fakt vorkommt, der zum Abschnitt passt und der helfen könnte die Diskussion anzustoßen, schreibe diesen Fakt hin und generiere eine passende Frage.
 Die Fragen sollten immer an den Gast und seine Erfahrungen gerichtet sein und somit oft mit seinem Namen beginnen, wie: Herr Mustermann, hatten Sie die gleiche Erfahrung gemacht?
 Die Inhalte in den einzelnen Abschnitten sollen sich an die Recherchierten Daten lehnen.
 Wenn beispielsweise herausgefunden wurde, dass automatisierung mehr gewinn einbringt und der Abschnitt über automatisierung ist, dann könnte der Abschnitt folgendes beinhalten:
-Automatisierung: Automatisierung bringt Gewinn ein. Was denken Sie darüber? 
+Automatisierung: Automatisierung hat bei Firma X 20% mehr Gewinn eingebracht. Was denken Sie darüber? 
 Nachfolgend ein Beispiel eines kurzen Podcast-Plans im JSON-Format
 Beispiel:
 {json_example}
@@ -86,7 +90,7 @@ Deine Antwort:
 podcast_structure_json_example = """{
   "Einleitung": ["Begrüßung und Vorstellung des Gastes", "Besprechung des heutigen Themas"],
   "Prozessautomatisierung": ["Firma X hat einen Prozess automatisiert und dabei im gleichen Jahr einen 20% höheren Gewinn gemacht. Haben Sie die gleiche Erfahrung gemacht?", "Was kann man daraus lernen?"],
-  "Anderes Thema": ["Interessantes zum anderen Thema", "Frage 1", "Frage2"],
+  "Anderes Thema": ["Interessantes zum anderen Thema aus der Recherche", "Frage 1", "Frage2"],
   "Schlussteil": ["Recap", "Mögliche Themen zum nächsten Podcast"]
 }"""
 
