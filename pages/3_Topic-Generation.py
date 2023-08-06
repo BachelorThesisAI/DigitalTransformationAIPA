@@ -20,7 +20,7 @@ if not llmService.isAPIKeySet():
 elif not podcastManager.isPodcastInfoSet():
     st.error("Bitte geben Sie zunächst Informationen zum Podcast ein.")
 else:
-    st.write("themen-generator explanation")
+    st.write("Hier können Themen für den Podcast generiert und bei Bedarf in die Informationseingabeseite übernommen werden.")
     
     if st.button("Generiere Themen"):
         with st.spinner("Generiere Themen ..."):
