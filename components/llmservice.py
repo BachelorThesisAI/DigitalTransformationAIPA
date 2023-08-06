@@ -135,7 +135,7 @@ class LLMService:
                                   chain_type="stuff", 
                                   retriever=retriever, 
                                   return_source_documents=True)
-        queries = [queries[0]]
+        #queries = [queries[0]]
         contexts_and_sources = [
             (print(f"Query: {query}"), rqa(query))[1] for query in queries
         ]
